@@ -65,6 +65,9 @@ void parseFile(string filepath, string outputPath)
         std::cout << "\nCould not open file." << endl;
         return;
     }
+    
+    fstream outFile;
+    outFile.open(outputPath,fstream::out);
 
     string line;
     int timeElapsed;
@@ -85,8 +88,6 @@ void parseFile(string filepath, string outputPath)
     {
         lineNum++;
 
-        fstream outFile;
-        outFile.open(outputPath,fstream::out);
         outFile.write(const_cast<char*>(line.c_str()), line.length());
         outFile << endl;
 
