@@ -54,7 +54,7 @@ string_code hashit (std::string const& inString) {
 */
 
 using namespace std;
-
+//format + substr(tab,end)
 
 void parseFile(string filepath, string outputPath)
 {
@@ -65,6 +65,8 @@ void parseFile(string filepath, string outputPath)
         std::cout << "\nCould not open file." << endl;
         return;
     }
+    fstream outFile;
+    outFile.open(outputPath,fstream::out);
 
     string line;
     int timeElapsed;
@@ -85,10 +87,8 @@ void parseFile(string filepath, string outputPath)
     {
         lineNum++;
 
-        fstream outFile;
-        outFile.open(outputPath,fstream::out);
-        outFile.write(const_cast<char*>(line.c_str()), line.length());
-        outFile << endl;
+        
+        
 
         if(lineNum==0) // Parsing the header
         {
@@ -142,7 +142,45 @@ void parseFile(string filepath, string outputPath)
             
         }
 
-        if(line[0]=='4'||key==1) //Scuffed way of skipping to body
+        if(line[0]=='4' && line[1]==' ') //Correcting line 2/3 skipping bias
+        {
+            tabInd = line.find('\t');
+            //cout << tabInd << endl;
+            timeElapsed = stoi(line.substr(0,tabInd)) + 1; //Adding one to get the proper time (starts at 0 on writing program)
+            //std::cout << timeElapsed;
+
+           
+            hours = timeElapsed/3600;
+            mins = (timeElapsed%3600)/60;
+            secs = (timeElapsed%3600)%60;
+
+            if(hours<10)
+                hourStr = "0" + to_string(hours); //Appending the 0 to the value if it's one digit
+            else    
+                hourStr = to_string(hours);
+            if(mins<10)
+                minStr = "0" + to_string(mins);
+            else    
+                minStr = to_string(mins);
+            if(secs<10)
+                secStr = "0" + to_string(secs);
+            else    
+                secStr = to_string(secs);
+
+            format = year + "-" + monthNum + "-" + date + '\t' + hourStr + ":" + minStr + ":" + secStr; // Final output of date and time parsing
+
+            //std::cout << " " << hours << " " << mins << " " << secs << " " << format << month << monthNum << date << " year:" << year <<  endl;
+            //std::cout << format << endl;
+            string lostData = line.substr(tabInd-5,6);
+            outFile << format << '\t' << lostData << line.substr(tabInd+1,line.length()-tabInd);
+            outFile << endl;
+
+
+
+
+        }
+
+        if((line[0]=='9'&& line[1]=='\t')||key==1) //Scuffed way of skipping to body which works so long as desync doesn't happen within first 10 seconds of the day
         {
             key=1;
             tabInd = line.find('\t');
@@ -168,16 +206,19 @@ void parseFile(string filepath, string outputPath)
             else    
                 secStr = to_string(secs);
 
-            format = year + "-" + monthNum + "-" + date + '\t' + hourStr + ":" + minStr + ":" + secStr + '\t'; // Final output of date and time parsing
+            format = year + "-" + monthNum + "-" + date + '\t' + hourStr + ":" + minStr + ":" + secStr; // Final output of date and time parsing
 
             //std::cout << " " << hours << " " << mins << " " << secs << " " << format << month << monthNum << date << " year:" << year <<  endl;
             //std::cout << format << endl;
 
+            outFile << format << line.substr(tabInd,line.length()-tabInd);
+            outFile << endl;
 
 
 
 
         }
+        
     }
 }
 
