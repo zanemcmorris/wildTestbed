@@ -180,7 +180,7 @@ void parseFile(string filepath, string outputPath)
 
         }
 
-        if((line[0]=='9'&& line[1]=='\t')||key==1) //Scuffed way of skipping to body which works so long as desync doesn't happen within first 10 seconds of the day
+        if(((line[0]=='9'||line[0]=='4')&& line[1]=='\t')||key==1) //Scuffed way of skipping to body which works so long as desync doesn't happen within first 10 seconds of the day
         {
             key=1;
             tabInd = line.find('\t');
