@@ -167,7 +167,7 @@ void parseFile(string filepath, string outputPath)
             else    
                 secStr = to_string(secs);
 
-            format = year + "-" + monthNum + "-" + date + '\t' + hourStr + ":" + minStr + ":" + secStr; // Final output of date and time parsing
+            format = year + "-" + monthNum + "-" + date + ' ' + hourStr + ":" + minStr + ":" + secStr; // Final output of date and time parsing
 
             //std::cout << " " << hours << " " << mins << " " << secs << " " << format << month << monthNum << date << " year:" << year <<  endl;
             //std::cout << format << endl;
@@ -206,7 +206,7 @@ void parseFile(string filepath, string outputPath)
             else    
                 secStr = to_string(secs);
 
-            format = year + "-" + monthNum + "-" + date + '\t' + hourStr + ":" + minStr + ":" + secStr; // Final output of date and time parsing
+            format = year + "-" + monthNum + "-" + date + ' ' + hourStr + ":" + minStr + ":" + secStr; // Final output of date and time parsing
 
             //std::cout << " " << hours << " " << mins << " " << secs << " " << format << month << monthNum << date << " year:" << year <<  endl;
             //std::cout << format << endl;
