@@ -6,8 +6,14 @@
 #include <cstdlib>
 #include <ctime>
 #include <chrono>
+#include <filesystem>
+//#include <boost/filesystem>
 
-#define filename "data.txt"
+using namespace std;
+namespace fs = std::filesystem;
+
+
+
 
 enum string_code {
     eJan,
@@ -24,7 +30,7 @@ enum string_code {
     eDec
 };
 
-string_code hashit (std::string const& inString) {
+string_code getMonth (string const& inString) {
     if (inString == "Jan") return eJan;
     if (inString == "Feb") return eFeb;
     if (inString == "Mar") return eMar;
@@ -53,11 +59,14 @@ string_code hashit (std::string const& inString) {
 
 */
 
-using namespace std;
 //format + substr(tab,end)
+
+
+
 
 void parseFile(string filepath, string outputPath)
 {
+    cout << "Reading file: " << filepath << endl;
     ifstream input;
     input.open(filepath);
     if(!input.good()) // Checking if stream is good cause I forgot the other method to close it :)
@@ -66,7 +75,7 @@ void parseFile(string filepath, string outputPath)
         return;
     }
     fstream outFile;
-    outFile.open(outputPath,fstream::out);
+    outFile.open(outputPath,std::ios_base::app);
 
     string line;
     int timeElapsed;
@@ -94,7 +103,7 @@ void parseFile(string filepath, string outputPath)
         {
             month = line.substr(4,3);
             //std::cout << month;
-            switch(hashit(month))
+            switch(getMonth(month))
             {
                 case eJan :
                     monthNum = "01";
@@ -174,10 +183,6 @@ void parseFile(string filepath, string outputPath)
             string lostData = line.substr(tabInd-5,6);
             outFile << format << '\t' << lostData << line.substr(tabInd+1,line.length()-tabInd);
             outFile << endl;
-
-
-
-
         }
 
         if(((line[0]=='9'||line[0]=='4')&& line[1]=='\t')||key==1) //Scuffed way of skipping to body which works so long as desync doesn't happen within first 10 seconds of the day
@@ -187,12 +192,9 @@ void parseFile(string filepath, string outputPath)
             //cout << tabInd << endl;
             timeElapsed = stoi(line.substr(0,tabInd)) + 1; //Adding one to get the proper time (starts at 0 on writing program)
             //std::cout << timeElapsed;
-
-           
             hours = timeElapsed/3600;
             mins = (timeElapsed%3600)/60;
             secs = (timeElapsed%3600)%60;
-
             if(hours<10)
                 hourStr = "0" + to_string(hours); //Appending the 0 to the value if it's one digit
             else    
@@ -207,15 +209,10 @@ void parseFile(string filepath, string outputPath)
                 secStr = to_string(secs);
 
             format = year + "-" + monthNum + "-" + date + ' ' + hourStr + ":" + minStr + ":" + secStr; // Final output of date and time parsing
-
             //std::cout << " " << hours << " " << mins << " " << secs << " " << format << month << monthNum << date << " year:" << year <<  endl;
             //std::cout << format << endl;
-
             outFile << format << line.substr(tabInd,line.length()-tabInd);
             outFile << endl;
-
-
-
 
         }
         
@@ -226,11 +223,16 @@ int main()
 {   
     string input;
     string output;
-    std::cout << "Enter filename for input data: ";
+    std::cout << "Enter directory for input data: ";
     cin >> input;
     std::cout << endl << "Enter output filename: ";
     cin >> output;
     
+    std::string path = input; // "sample_data"
+        for (const auto & entry : fs::directory_iterator(path))
+            parseFile(entry.path().string(),output);
+
+
 
     chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     parseFile(input, output);
@@ -239,6 +241,7 @@ int main()
     std::cout << "Script took " + to_string(timeElapsed/1E6) + " seconds to run" << endl;
 
     
+   
     /*
     fstream outFile;
     outFile.open("output.txt",fstream::out);
