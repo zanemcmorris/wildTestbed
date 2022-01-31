@@ -219,14 +219,13 @@ void parseFile(string filepath, string outputPath)
     }
 }
 
-int main()
+int main(int argc[], char * argv[])
 {   
-    string input;
-    string output;
-    std::cout << "Enter directory for input data: ";
-    cin >> input;
-    std::cout << endl << "Enter output filename: ";
-    cin >> output;
+    string input = argv[1];
+    string output = argv[2];
+    
+
+
     chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 
     std::string path = input; // "sample_data"
