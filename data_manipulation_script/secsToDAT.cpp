@@ -227,15 +227,15 @@ int main()
     cin >> input;
     std::cout << endl << "Enter output filename: ";
     cin >> output;
-    
+    chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+
     std::string path = input; // "sample_data"
         for (const auto & entry : fs::directory_iterator(path))
             parseFile(entry.path().string(),output);
 
 
 
-    chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-    parseFile(input, output);
+    //parseFile(input, output);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     double timeElapsed =  std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     std::cout << "Script took " + to_string(timeElapsed/1E6) + " seconds to run" << endl;
