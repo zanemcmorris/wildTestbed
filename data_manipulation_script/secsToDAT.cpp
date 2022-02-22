@@ -11,6 +11,8 @@
 
 using namespace std;
 namespace fs = std::filesystem;
+// Global ints to store # of good and corrupted/unreadable files
+int good, bad = 0;
 
 enum string_code
 {
@@ -64,15 +66,11 @@ string_code getMonth(string const &inString)
         - Take first int of each line, convert to a string of 00:00:00 format
         - Copy rest of data
     - Close
-
-
-
-
 */
 
 // format + substr(tab,end)
 
-void parseFile(string filepath, string outputPath, int *good, int *bad)
+void parseFile(string filepath, string outputPath)
 {
     try
     {
@@ -231,9 +229,7 @@ void parseFile(string filepath, string outputPath, int *good, int *bad)
 
 int main(int argc, char *argv[])
 {
-    int good, bad = 0;
-    int *goodPtr = &good;
-    int *badPtr = &bad;
+
     string input = argv[1];
     string output = argv[2];
 
@@ -242,18 +238,17 @@ int main(int argc, char *argv[])
     std::string path = input; // "sample_data"
     for (const auto &entry : fs::recursive_directory_iterator(path))
     {
-        parseFile(entry.path().string(), output, goodPtr, badPtr);
+        parseFile(entry.path().string(), output);
         if (good % 100 == 0)
             cout << "\nNum good files" << good << endl;
     }
-    int total = *goodPtr + *badPtr;
-    double rate = (*goodPtr / total);
+    double rate = (good / (good + bad)) * 100.0;
 
     // parseFile(input, output);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     double timeElapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     std::cout << "Script took " + to_string(timeElapsed / 1E6) + " seconds to run" << endl;
-    cout << "Clean data rate: " << rate << "\% over " << total << " files." << endl;
+    cout << "Clean data rate: " << rate << "\% over " << good + bad << " files." << endl;
 
     /*
     fstream outFile;
