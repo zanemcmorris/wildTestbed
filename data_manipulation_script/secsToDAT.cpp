@@ -214,6 +214,13 @@ void parseFile(string filepath, string outputPath)
                 format = year + "-" + monthNum + "-" + date + ' ' + hourStr + ":" + minStr + ":" + secStr; // Final output of date and time parsing
                 // std::cout << " " << hours << " " << mins << " " << secs << " " << format << month << monthNum << date << " year:" << year <<  endl;
                 // std::cout << format << endl;
+                // Check for the space between 2nd dash and 1st digit of date
+                if (format.substr(7, 2).find(' ') != string::npos)
+                {
+                    // Delete space from i
+                    format.erase(8, 9);
+                }
+
                 outFile << format << line.substr(tabInd, line.length() - tabInd);
                 outFile << endl;
             }
@@ -223,15 +230,15 @@ void parseFile(string filepath, string outputPath)
     catch (const std::invalid_argument &ia)
     {
         bad++;
-        cout << "Failed to read file : " << filepath << " due to " << ia.what() << ". Continuing..." << endl;
+        cout << "Failed to read file : " << filepath << " due to undefined behavior... continuing..." << endl;
     }
 }
 
 int main(int argc, char *argv[])
 {
 
-    string input = argv[1];
-    string output = argv[2];
+    string input = argv[1];  // First arguemnt is input file path
+    string output = argv[2]; // Second argument
 
     chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 
