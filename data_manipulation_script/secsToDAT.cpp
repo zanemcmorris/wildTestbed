@@ -7,12 +7,14 @@
 #include <ctime>
 #include <chrono>
 #include <filesystem>
+#include <vector>
 //#include <boost/filesystem>
 
 using namespace std;
 namespace fs = std::filesystem;
 // Global ints to store # of good and corrupted/unreadable files
 int good, bad = 0;
+vector<string> badPaths;
 
 enum string_code
 {
@@ -218,11 +220,16 @@ void parseFile(string filepath, string outputPath)
                 if (format.substr(7, 2).find(' ') != string::npos)
                 {
                     // Delete space from i
-                    format.erase(8, 9);
+                    format.erase(8, 1);
                 }
-
-                outFile << format << line.substr(tabInd, line.length() - tabInd);
-                outFile << endl;
+                if (line.substr(tabInd, line.length() - tabInd).find("nan") == string::npos)
+                {
+                    // Don't write lines that contain the word "nan"
+                    // Soln to error on 3/8/22 ZM.
+                    // Runtime increase nearly 33% when implemented
+                    outFile << format << line.substr(tabInd, line.length() - tabInd);
+                    outFile << endl;
+                }
             }
         }
         good++;
@@ -255,8 +262,9 @@ int main(int argc, char *argv[])
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     double timeElapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     std::cout << "Script took " + to_string(timeElapsed / 1E6) + " seconds to run" << endl;
-    cout << "Clean data rate: " << rate << "\% over " << good + bad << " files." << endl;
-
+    // cout << "Clean data rate: " << rate << "\% over " << good + bad << " files." << endl;
+    cout << "# of good files: " + to_string(good) + " | # of bad files: " + to_string(bad) << endl;
+    cout << "Wrote output to: " + output << endl;
     /*
     fstream outFile;
     outFile.open("output.txt",fstream::out);
